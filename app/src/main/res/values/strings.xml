@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Cocktail God</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="level1">Легко</string>
+    <string name="level2">Средне</string>
+    <string name="level3">Сложно</string>
+
+</resources>
