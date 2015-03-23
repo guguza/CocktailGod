@@ -14,6 +14,7 @@ public class Cocktail {
     String instructions;
     String difficulty;
     Context context;
+    String imageURL;
 
     public Cocktail() {
 
