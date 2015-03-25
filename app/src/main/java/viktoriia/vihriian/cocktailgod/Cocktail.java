@@ -31,10 +31,11 @@ public class Cocktail {
     private boolean setDifficulty() throws NullPointerException{
         try {
             int l = instructions.length();
-            if (l <= 90) {
+            if (l <= 100) {
                 difficulty = context.getResources().getString(R.string.level1);
                 return true;
-            } else if (l <= 130) {
+            }
+            if (l <= 150) {
                 difficulty = context.getResources().getString(R.string.level2);
                 return true;
             }

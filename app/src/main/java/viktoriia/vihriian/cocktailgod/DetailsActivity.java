@@ -14,6 +14,8 @@ import org.w3c.dom.Text;
 public class DetailsActivity extends Activity{
     ImageView image;
     TextView name, ingredients, instructions;
+    private ImageLoader imgLoader;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details);
@@ -21,9 +23,10 @@ public class DetailsActivity extends Activity{
         image = (ImageView) findViewById(R.id.cocktail);
         String imageUrl = getIntent().getStringExtra("image");
 
-        new DownloadImageTask(image)
-                .execute(imageUrl);
-
+        /*new DownloadImageTask(image)
+                .execute(imageUrl);*/
+        imgLoader = new ImageLoader(this);
+        imgLoader.DisplayImage(imageUrl, image);
         name = (TextView) findViewById(R.id.name);
         name.setText(getIntent().getStringExtra("name"));
 

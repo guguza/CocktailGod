@@ -1,44 +1,21 @@
 package viktoriia.vihriian.cocktailgod;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 
-/**
- * Created by Администратор on 23.03.2015.
- */
 
 public class CocktailsAdapter extends ArrayAdapter<String> {
     Context myContext;
-    ImageLoader imageLoader;
     ViewHolder holder;
+    private ImageLoader imgLoader;
 
     public CocktailsAdapter(Context context, ArrayList<String> objects) {
         super(context, R.layout.row, R.id.name, objects);
+        imgLoader = new ImageLoader(context);
        // imageLoader = ImageLoader.getInstance();
        // imageLoader.init(ImageLoaderConfiguration.createDefault(getContext()));
 
@@ -68,8 +45,9 @@ public class CocktailsAdapter extends ArrayAdapter<String> {
             CocktailsListActivity.cocktailsArr.get(pos).imageURL = "http://www.barbook.ru/upload/" +
                     "cocktails2/2001c5cfd1b9cc99112cf33d10dc0a77_80x110.png";
         }
-        new DownloadImageTask(holder.icon)
-                .execute(CocktailsListActivity.cocktailsArr.get(pos).imageURL);
+        /*new DownloadImageTask(holder.icon)
+                .execute(CocktailsListActivity.cocktailsArr.get(pos).imageURL);*/
+        imgLoader.DisplayImage(CocktailsListActivity.cocktailsArr.get(pos).imageURL, holder.icon);
 
         int rate = 1;
         if(CocktailsListActivity.cocktailsArr.get(pos).difficulty.equals("Средне")) {
