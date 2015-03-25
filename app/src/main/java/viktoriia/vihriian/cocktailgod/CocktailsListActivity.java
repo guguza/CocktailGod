@@ -2,6 +2,7 @@ package viktoriia.vihriian.cocktailgod;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,8 +10,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
+import com.nostra13.universalimageloader.utils.StorageUtils;
+
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -31,6 +43,20 @@ public class CocktailsListActivity extends ListActivity {
 
         myDbHelper.createDataBase();
 
+
+        File cacheDir = StorageUtils.getCacheDirectory(myContext, true);
+        ImageLoaderConfiguration config;
+        config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                .memoryCacheExtraOptions(480, 800) // width, height
+                .threadPoolSize(5)
+                .threadPriority(Thread.MIN_PRIORITY + 2)
+                .denyCacheImageMultipleSizesInMemory()
+                .memoryCache(new UsingFreqLimitedMemoryCache(2 * 1024 * 1024)) // 2 Mb
+                .discCache(new UnlimitedDiscCache(cacheDir))
+                .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
+                .imageDownloader(new BaseImageDownloader(myContext, 5 * 1000, 30 * 1000)) // connectTimeout (5 s), readTimeout (30 s)
+                .defaultDisplayImageOptions(DisplayImageOptions.createSimple())
+                .build();
         try {
 
             myDataBase = myDbHelper.openDataBase();
@@ -44,6 +70,19 @@ public class CocktailsListActivity extends ListActivity {
         setListAdapter(new CocktailsAdapter(myContext, readCocktailsFromDB()));
 
         ListView lv = getListView();
+        lv.setLongClickable(true);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> arg0, View arg1,
+                                           int pos, long id) {
+               Intent intent = new Intent(CocktailsListActivity.this, DetailsActivity.class);
+               intent.putExtra("image", cocktailsArr.get(pos).imageURL);
+               intent.putExtra("name",cocktailsArr.get(pos).name);
+               intent.putExtra("ingredients",cocktailsArr.get(pos).ingredients);
+               intent.putExtra("instructions", cocktailsArr.get(pos).instructions);
+               startActivity(intent);
+            }
+        });
     }
 
     private ArrayList<String> readCocktailsFromDB() {
@@ -74,17 +113,11 @@ public class CocktailsListActivity extends ListActivity {
 
         ArrayList<String> namesArr = new ArrayList<String>();
         for (int k = 0; k < cocktailsArr.size(); k++) {
-            namesArr.add(cocktailsArr.get(k).name);
+             namesArr.add(cocktailsArr.get(k).name.substring(0, cocktailsArr.get(k).name.length()-1));
+
         }
         readImagesFromDB();
-/*
-        // Создаем адаптер
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, namesArr);
-        dataAdapter
-                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dataAdapter.notifyDataSetChanged();
-        spin.setAdapter(dataAdapter);*/
+
         return namesArr;
     }
 
@@ -116,6 +149,21 @@ public class CocktailsListActivity extends ListActivity {
         }
         cursor.close();
         return true;
+    }
+
+    public static String[] toIngredientsList(String resource) {
+        String[] lol = resource.split("[\\r\\n\\—]+");
+        String[] dest = new String[3];
+        int k = 0;
+        for(int i = 0; i < lol.length; i++){
+            if(i % 2 != 0) {
+                dest[k++] = lol[i];
+                if(k == 3) {
+                    break;
+                }
+            }
+        }
+        return dest;
     }
 
 

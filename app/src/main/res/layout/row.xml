@@ -13,6 +13,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:orientation="vertical">
         <TextView
             android:id="@+id/name"
@@ -20,10 +21,32 @@
             android:layout_height="wrap_content"
             android:textSize="25sp"
             android:textStyle="bold"/>
+
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ratingBar"
+            style="?android:attr/ratingBarStyleSmall"
+            android:numStars="3"
+            android:stepSize="0.1"
+            android:isIndicator="true"/>
+
         <TextView
             android:id="@+id/ingredients"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"/>
+
     </LinearLayout>
+    <ImageView
+            android:id="@+id/arrow"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="2dip"
+            android:contentDescription="arrow to the right"
+            android:layout_gravity="top"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+
+            android:background="@drawable/arrow_right"/>
 </LinearLayout>

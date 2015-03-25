@@ -2,6 +2,7 @@ package viktoriia.vihriian.cocktailgod;
 
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 /**
@@ -10,9 +11,11 @@ import android.widget.TextView;
 public class ViewHolder {
     ImageView icon;
     TextView ingredients;
+    RatingBar level;
 
     ViewHolder(View row) {
         ingredients = (TextView) row.findViewById(R.id.ingredients);
         icon = (ImageView) row.findViewById(R.id.icon);
+        level = (RatingBar) row.findViewById(R.id.ratingBar);
     }
 }
