@@ -8,5 +8,6 @@
     <string name="level2">Средне</string>
     <string name="level3">Сложно</string>
     <string name="icon">Image of cocktail</string>
+    <string name="title_activity_my">MyActivity</string>
 
 </resources>

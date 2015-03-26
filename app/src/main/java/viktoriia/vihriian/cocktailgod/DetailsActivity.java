@@ -38,7 +38,7 @@ public class DetailsActivity extends Activity{
         instructions.setText(getIntent().getStringExtra("instructions").replace(":", ":\n"));
     }
 
-public void goBack(View v) {
+    public void goBack(View v) {
     finish();
 }
 }
