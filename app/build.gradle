@@ -13,14 +13,25 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+repositories {
+    jcenter()
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/universal-image-loader-1.9.3.jar')
     compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:cardview-v7:21.0.+'
+    compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'jp.wasabeef:recyclerview-animators:1.1.2@aar'
+    compile('com.mikepenz.materialdrawer:library:2.6.8@aar') {
+        transitive = true
+    }
+    compile "org.androidannotations:androidannotations-api:3.1"
 }

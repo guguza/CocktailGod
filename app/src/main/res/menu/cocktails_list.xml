@@ -2,15 +2,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".CocktailsListActivity" >
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_random"
+        android:orderInCategory="200"
+        android:title="Random cocktail"
+        android:icon="@drawable/ic_random"
+        app:showAsAction="always"
+        ></item>
     <item
         android:id="@+id/action_search"
-        android:orderInCategory="200"
+        android:orderInCategory="100"
         android:title="Search"
         android:icon="@drawable/ic_search"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
+        app:actionViewClass="android.support.v7.widget.SearchView"
         ></item>
-</menu>
+    </menu>

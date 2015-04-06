@@ -9,5 +9,6 @@
     <string name="level3">Сложно</string>
     <string name="icon">Image of cocktail</string>
     <string name="title_activity_my">MyActivity</string>
+    <string name="title_activity_settings">SettingsActivity</string>
 
 </resources>

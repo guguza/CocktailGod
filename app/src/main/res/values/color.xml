@@ -2,4 +2,7 @@
     <resources>
         <color name="ColorPrimary">#FF5722</color>
         <color name="ColorPrimaryDark">#E64A19</color>
+        <color name="ColorCard">#FFC107</color>
+        <color name="TextLight">#fffffef2</color>
+        <color name="TextGray">#7015181c</color>
     </resources>

@@ -3,17 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".SettingsActivity">
 
     <include
-        android:id="@+id/tool_bar"
+        android:id="@+id/tb_settings"
         layout="@layout/tool_bar"
-        ></include>
+        > </include>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rv"
+        android:id="@+id/rv_settings"
         />
 
 </LinearLayout>

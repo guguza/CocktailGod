@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/scrollView" >
-<LinearLayout
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/tool_bar"
+        ></include>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -21,29 +21,47 @@
             android:onClick="goBack"
             android:layout_marginLeft="10dp"/>
         <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
             android:id="@+id/cocktail"
             android:layout_centerHorizontal="true"/>
-        </RelativeLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/line"
+            android:layout_marginTop="8dp"
+            android:layout_below="@id/cocktail"
+            android:background="@drawable/dividing_line" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:id="@+id/background"
+            android:background="@drawable/grey_background"
+            android:layout_marginTop="125dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:textColor="@color/TextLight"
+            android:id="@+id/name"
+            android:textStyle="bold"
+            android:layout_marginTop="135dp"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
 
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/line"
-        android:background="@drawable/dividing_line"
-        android:layout_gravity="center_horizontal" />
-
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/scrollView">
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/name"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
@@ -69,3 +87,4 @@
         android:gravity="center_horizontal" />
 </LinearLayout>
 </ScrollView>
+    </LinearLayout>

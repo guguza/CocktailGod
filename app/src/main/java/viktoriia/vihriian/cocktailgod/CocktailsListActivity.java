@@ -1,30 +1,37 @@
 package viktoriia.vihriian.cocktailgod;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
-import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
+
+import jp.wasabeef.recyclerview.animators.adapters.SlideInRightAnimationAdapter;
 
 
 public class CocktailsListActivity extends ActionBarActivity {
@@ -35,11 +42,22 @@ public class CocktailsListActivity extends ActionBarActivity {
     static final String TAG = "myLogs";
     static Context myContext;
     Toolbar toolbar;
+    CAdapter adapter;
+    RecyclerView rv;
+    Random random;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.setNewDataset();
+        rv.swapAdapter(adapter, false);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cocktails_list);
+
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
 
@@ -49,19 +67,6 @@ public class CocktailsListActivity extends ActionBarActivity {
         myDbHelper = new CocktailsDBHelper(this);
         myDbHelper.createDataBase();
 
-        /*File cacheDir = StorageUtils.getCacheDirectory(myContext, true);
-        ImageLoaderConfiguration config;
-        config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                .memoryCacheExtraOptions(480, 800) // width, height
-                .threadPoolSize(5)
-                .threadPriority(Thread.MIN_PRIORITY + 2)
-                .denyCacheImageMultipleSizesInMemory()
-                .memoryCache(new UsingFreqLimitedMemoryCache(2 * 1024 * 1024)) // 2 Mb
-                .discCache(new UnlimitedDiscCache(cacheDir))
-                .discCacheFileNameGenerator(new HashCodeFileNameGenerator())
-                .imageDownloader(new BaseImageDownloader(myContext, 5 * 1000, 30 * 1000)) // connectTimeout (5 s), readTimeout (30 s)
-                .defaultDisplayImageOptions(DisplayImageOptions.createSimple())
-                .build();*/
         try {
 
             myDataBase = myDbHelper.openDataBase();
@@ -71,25 +76,131 @@ public class CocktailsListActivity extends ActionBarActivity {
             throw new Error("Unable to open database");
 
         }
-        /*setListAdapter(new CocktailsAdapter(myContext, readCocktailsFromDB()));
+        readCocktailsFromDB();
+        myDbHelper.close();
 
-        ListView lv = getListView();
-        lv.setLongClickable(true);
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        adapter = new CAdapter(cocktailsArr);
+        rv = (RecyclerView)findViewById(R.id.rv);
+        rv.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(myContext);
+        rv.setLayoutManager(llm);
+        rv.addOnItemTouchListener(
+                new RecyclerItemClickListener(myContext, new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int pos) {
+                        Animation fadeIn = new AlphaAnimation(0, 1);
+                        fadeIn.setDuration(300);
+                        view.startAnimation(fadeIn);
+                        Intent intent = new Intent(CocktailsListActivity.this, DetailsActivity.class);
+                        intent.putExtra("image", adapter.cocktails.get(pos).imageURL);
+                        intent.putExtra("name", adapter.cocktails.get(pos).name);
+                        intent.putExtra("ingredients", adapter.cocktails.get(pos).ingredients);
+                        intent.putExtra("instructions", adapter.cocktails.get(pos).instructions);
+                        startActivity(intent);
 
-            public void onItemClick(AdapterView<?> arg0, View arg1,
-                                    int pos, long id) {
-                Intent intent = new Intent(CocktailsListActivity.this, DetailsActivity.class);
-                intent.putExtra("image", cocktailsArr.get(pos).imageURL);
-                intent.putExtra("name", cocktailsArr.get(pos).name);
-                intent.putExtra("ingredients", cocktailsArr.get(pos).ingredients);
-                intent.putExtra("instructions", cocktailsArr.get(pos).instructions);
-                startActivity(intent);
-            }
-        });*/
+                    }
+                })
+        );
+
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if (sdk > 10){
+            rv.setAdapter(new SlideInRightAnimationAdapter(adapter));
+        } else{
+            rv.setAdapter(adapter);
+        }
+       // rv.setItemAnimator(new DefaultItemAnimator());
+        Drawer.Result result = new Drawer()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withHeader(R.layout.material_drawer_layout)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName("Все коктейли"),
+                        new DividerDrawerItem(),
+                        new PrimaryDrawerItem().withName("Избранное"),
+                        new DividerDrawerItem(),
+                        new PrimaryDrawerItem().withName("Настройки"),
+                        new DividerDrawerItem(),
+                        new SecondaryDrawerItem().withName("О нас")
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                        if(position == 4){
+                            Intent intent = new Intent(CocktailsListActivity.this, SettingsActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                })
+                .build();
     }
 
+    public ArrayList<String> readCocktailsFromDB() {
+        if (myDataBase == null) {
+            Log.w(TAG, "Database doesn't exist");
+        }
+        Cursor cursor = myDataBase.query(myDbHelper.TABLE_NAME_1, null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
 
+        for (int i = 0; cursor.moveToNext(); i++) {
+            int id = cursor.getInt(cursor.getColumnIndex(myDbHelper.ID));
+            String name = cursor.getString(cursor
+                    .getColumnIndex(myDbHelper.COCKTAIL_NAME));
+            String ingredients = cursor.getString(cursor
+                    .getColumnIndex(myDbHelper.INGREDIENTS));
+            String instructions = cursor.getString(cursor
+                    .getColumnIndex(myDbHelper.INSTRUCTIONS));
+
+            cocktailsArr.add(new Cocktail(this, id, name, ingredients, instructions));
+
+        }
+        cursor.close();
+
+        ArrayList<String> namesArr = new ArrayList<String>();
+        for (int k = 0; k < cocktailsArr.size(); k++) {
+            namesArr.add(cocktailsArr.get(k).name.substring(0, cocktailsArr.get(k).name.length() - 1));
+
+        }
+        readImagesFromDB();
+
+        return namesArr;
+    }
+
+    private boolean readImagesFromDB() {
+        if (myDataBase == null) {
+            Log.w(TAG, "Database doesn't exist");
+            return false;
+        }
+        Cursor cursor = myDataBase.query(myDbHelper.TABLE_NAME_2, null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        String image;
+        String name;
+        for (int i = 0; cursor.moveToNext(); i++) {
+            image = cursor.getString(cursor
+                    .getColumnIndex(myDbHelper.IMAGE));
+            name = cursor.getString(cursor
+                    .getColumnIndex(myDbHelper.COCKTAIL_NAME));
+            for (Cocktail cocktail : cocktailsArr) {
+                if (cocktail.name.equals(name)) {
+                    cocktail.imageURL = "http://www.barbook.ru" + image;
+                    continue;
+                }
+            }
+        }
+        cursor.close();
+        return true;
+    }
 
     public static String[] toIngredientsList(String resource) {
         String[] lol = resource.split("[\\r\\n\\—]+");
@@ -109,9 +220,27 @@ public class CocktailsListActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.cocktails_list, menu);
-        return true;
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if(!adapter.find(s))
+                    Toast.makeText(CocktailsListActivity.myContext, "Ничего не найдено по запросу!",
+                            Toast.LENGTH_SHORT).show();
+                rv.swapAdapter(adapter, false);
+                return true;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -120,14 +249,23 @@ public class CocktailsListActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_random:
+                random = new Random();
+                int pos = random.nextInt(cocktailsArr.size() + 1);
+                Intent intent = new Intent(CocktailsListActivity.this, DetailsActivity.class);
+                intent.putExtra("image", cocktailsArr.get(pos).imageURL);
+                intent.putExtra("name", cocktailsArr.get(pos).name);
+                intent.putExtra("ingredients", cocktailsArr.get(pos).ingredients);
+                intent.putExtra("instructions", cocktailsArr.get(pos).instructions);
+                startActivity(intent);
+                return true;
+            case R.id.action_search:
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
-    }
+}
 
 
