@@ -15,16 +15,18 @@ public class Cocktail {
     String difficulty;
     Context context;
     String imageURL;
+    int favourite;
 
     public Cocktail() {
 
     }
-    public Cocktail(Context context, int id, String name, String ingredients, String instructions) {
+    public Cocktail(Context context, int id, String name, String ingredients, String instructions, int favourite) {
         this.context = context;
         this.id = id;
         this.name = name;
         this.ingredients = ingredients;
         this.instructions = instructions;
+        this.favourite = favourite;
         setDifficulty();
     }
 

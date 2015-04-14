@@ -25,7 +25,6 @@ public class CAdapter extends RecyclerView.Adapter<CAdapter.CViewHolder> {
     public CAdapter(ArrayList<Cocktail> cocktails) {
         cocktailsDemo = new ArrayList<Cocktail>();
         this.cocktails = new ArrayList<Cocktail>();
-     //   this.cocktails.addAll(cocktails);
         imgLoader = new ImageLoader(CocktailsListActivity.myContext);
         filter = Filter.getInstance();
         //stateList = CocktailsListActivity.myContext.getResources().getColorStateList(R.color.example_colors_state);
@@ -83,19 +82,28 @@ public class CAdapter extends RecyclerView.Adapter<CAdapter.CViewHolder> {
         return true;
     }
 
-    public void setNewDataset() {
+    public boolean setNewDataset() {
         cocktailsDemo.clear();
         cocktails.clear();
         for(int i = 0; i < CocktailsListActivity.cocktailsArr.size(); i++) {
-            if(filterBy(filter.currentFilters[4], CocktailsListActivity.cocktailsArr.get(i).difficulty)) {
-                cocktailsDemo.add(CocktailsListActivity.cocktailsArr.get(i));
+            if(filterBy(filter.currentFilters[4], CocktailsListActivity.cocktailsArr.get(i).difficulty)
+                    && filterBy(filter.currentFilters[2], CocktailsListActivity.cocktailsArr.get(i).ingredients)) {
+                if (Filter.favourites == 0) {
+                    cocktailsDemo.add(CocktailsListActivity.cocktailsArr.get(i));
+                } else if (CocktailsListActivity.cocktailsArr.get(i).favourite == Filter.favourites) {
+                    cocktailsDemo.add(CocktailsListActivity.cocktailsArr.get(i));
+                }
             }
         }
         cocktails.addAll(cocktailsDemo);
+        if(cocktails.size() == 0) {
+            return false;
+        }
+        return true;
     }
 
     private boolean filterBy(String query, String currAttribute){
-            if(query.equals("Не выбрано") || currAttribute.equals(query)) {
+            if(query.equals("Не выбрано") || currAttribute.contains(query)) {
                 return true;
                 }
         return false;

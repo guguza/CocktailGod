@@ -18,6 +18,7 @@ public class Filter {
             "Не выбрано", "Не выбрано"};
     protected static String[] titleArray = {"Поиск", "Категория", "Основной ингредиент", "Крепость",
             "Cложность", "Вкус"};
+    protected static int favourites;
 
     private Filter() {
     }

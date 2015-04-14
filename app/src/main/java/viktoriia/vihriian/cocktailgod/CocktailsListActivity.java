@@ -28,7 +28,10 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import jp.wasabeef.recyclerview.animators.adapters.SlideInRightAnimationAdapter;
@@ -49,8 +52,16 @@ public class CocktailsListActivity extends ActionBarActivity {
     @Override
     public void onResume() {
         super.onResume();
-        adapter.setNewDataset();
+        if(!adapter.setNewDataset())
+            Toast.makeText(myContext, "Ничего не найдено по запросу!",
+                    Toast.LENGTH_SHORT).show();
         rv.swapAdapter(adapter, false);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        myDbHelper.close();
     }
 
     @Override
@@ -77,7 +88,8 @@ public class CocktailsListActivity extends ActionBarActivity {
 
         }
         readCocktailsFromDB();
-        myDbHelper.close();
+
+
 
         adapter = new CAdapter(cocktailsArr);
         rv = (RecyclerView)findViewById(R.id.rv);
@@ -96,6 +108,9 @@ public class CocktailsListActivity extends ActionBarActivity {
                         intent.putExtra("name", adapter.cocktails.get(pos).name);
                         intent.putExtra("ingredients", adapter.cocktails.get(pos).ingredients);
                         intent.putExtra("instructions", adapter.cocktails.get(pos).instructions);
+
+                        intent.putExtra("favourite", adapter.cocktails.get(pos).favourite);
+                        intent.putExtra("id", adapter.cocktails.get(pos).id);
                         startActivity(intent);
 
                     }
@@ -120,14 +135,32 @@ public class CocktailsListActivity extends ActionBarActivity {
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName("Настройки"),
                         new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName("О нас")
+                        new SecondaryDrawerItem().withName("О программе")
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
                         // do something with the clicked item :D
+                        if(position == 0) {
+                            Filter.favourites = 0;
+                            if(!adapter.setNewDataset())
+                                Toast.makeText(myContext, "Ничего не найдено по запросу!",
+                                        Toast.LENGTH_SHORT).show();
+                            rv.swapAdapter(adapter, false);
+                        }
+                        if(position == 2) {
+                            Filter.favourites = 1;
+                            if(!adapter.setNewDataset())
+                                Toast.makeText(myContext, "Ничего не найдено по запросу!",
+                                        Toast.LENGTH_SHORT).show();
+                            rv.swapAdapter(adapter, false);
+                        }
                         if(position == 4){
                             Intent intent = new Intent(CocktailsListActivity.this, SettingsActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else if(position == 6) {
+                            Intent intent = new Intent(CocktailsListActivity.this, AboutActivity.class);
                             startActivity(intent);
                             finish();
                         }
@@ -156,8 +189,9 @@ public class CocktailsListActivity extends ActionBarActivity {
                     .getColumnIndex(myDbHelper.INGREDIENTS));
             String instructions = cursor.getString(cursor
                     .getColumnIndex(myDbHelper.INSTRUCTIONS));
+            int favourite = cursor.getInt(cursor.getColumnIndex(myDbHelper.FAVOURITES));
 
-            cocktailsArr.add(new Cocktail(this, id, name, ingredients, instructions));
+            cocktailsArr.add(new Cocktail(this, id, name, ingredients, instructions, favourite));
 
         }
         cursor.close();
@@ -252,12 +286,14 @@ public class CocktailsListActivity extends ActionBarActivity {
         switch (id) {
             case R.id.action_random:
                 random = new Random();
-                int pos = random.nextInt(cocktailsArr.size() + 1);
+                int pos = random.nextInt(adapter.cocktails.size());
                 Intent intent = new Intent(CocktailsListActivity.this, DetailsActivity.class);
-                intent.putExtra("image", cocktailsArr.get(pos).imageURL);
-                intent.putExtra("name", cocktailsArr.get(pos).name);
-                intent.putExtra("ingredients", cocktailsArr.get(pos).ingredients);
-                intent.putExtra("instructions", cocktailsArr.get(pos).instructions);
+                intent.putExtra("image", adapter.cocktails.get(pos).imageURL);
+                intent.putExtra("name", adapter.cocktails.get(pos).name);
+                intent.putExtra("ingredients", adapter.cocktails.get(pos).ingredients);
+                intent.putExtra("instructions", adapter.cocktails.get(pos).instructions);
+                intent.putExtra("favourite", adapter.cocktails.get(pos).favourite);
+                intent.putExtra("id", adapter.cocktails.get(pos).id);
                 startActivity(intent);
                 return true;
             case R.id.action_search:

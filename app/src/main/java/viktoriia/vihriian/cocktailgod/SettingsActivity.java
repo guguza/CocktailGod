@@ -75,14 +75,24 @@ public class SettingsActivity extends ActionBarActivity {
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName("Настройки"),
                         new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName("О нас")
+                        new SecondaryDrawerItem().withName("О программе")
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
                         // do something with the clicked item :D
                         if(position == 0){
+                            Filter.favourites = 0;
                             Intent intent = new Intent(SettingsActivity.this, CocktailsListActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }  else if(position == 2) {
+                            Filter.favourites = 1;
+                            Intent intent = new Intent(SettingsActivity.this, CocktailsListActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }else if(position == 6) {
+                            Intent intent = new Intent(SettingsActivity.this, AboutActivity.class);
                             startActivity(intent);
                             finish();
                         }
@@ -154,9 +164,6 @@ public class SettingsActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

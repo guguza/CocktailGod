@@ -5,4 +5,9 @@
         <color name="ColorCard">#FFC107</color>
         <color name="TextLight">#fffffef2</color>
         <color name="TextGray">#7015181c</color>
+
+        <color name="list_background">#ff800009</color>
+        <color name="list_background_pressed">#ccc</color>
+        <color name="drawer_item_color">#fff</color>
+        <color name="list_divider">#5e5e5e</color>
     </resources>

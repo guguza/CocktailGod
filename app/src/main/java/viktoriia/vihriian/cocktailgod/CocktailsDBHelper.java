@@ -32,6 +32,7 @@ public class CocktailsDBHelper extends SQLiteOpenHelper {
     static final String INSTRUCTIONS = "instructions";
     static final String IMAGE = "url";
     static final String DIFFICULTY = "difficulty";
+    static final String FAVOURITES = "favourite";
 
 
     public CocktailsDBHelper(Context context) {
